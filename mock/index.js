@@ -9,7 +9,8 @@ const domestic = require('./domestic')
 const international = require('./international')
 const amendments = require('./amendments')
 const userManager = require('./user-manager')
-
+const customerDomestic = require('./customer-domestic')
+const customerInternational = require('./customer-international')
 
 
 const mocks = [
@@ -20,7 +21,9 @@ const mocks = [
   ...domestic,
   ...international,
   ...amendments,
-  ...userManager
+  ...userManager,
+  ...customerDomestic,
+  ...customerInternational
 ]
 
 // for front mock

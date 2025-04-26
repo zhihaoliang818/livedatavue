@@ -46,6 +46,16 @@ export default {
   data() {
     return {
       logs: [
+        { id: 18, account: 'admin', operator: 'admin', action: '删除境外客户', time: '2024-02-18 14:15:00' },
+        { id: 17, account: 'zhaolong', operator: '赵龙', action: '新增境外客户', time: '2024-02-17 16:20:18' },
+        { id: 16, account: 'wangting', operator: '王婷', action: '删除境内客户', time: '2024-02-16 10:45:22' },
+        { id: 15, account: 'liudashuai', operator: '刘大帅', action: '新增境外客户', time: '2024-02-15 09:30:15' },
+        { id: 14, account: 'xiaomi', operator: '王小米', action: '删除境内客户', time: '2024-02-14 15:10:33' },
+        { id: 13, account: 'admin', operator: 'admin', action: '新增境外客户', time: '2024-02-13 11:25:40' },
+        { id: 12, account: 'zhaolong', operator: '赵龙', action: '删除境外客户', time: '2024-02-12 17:05:29' },
+        { id: 11, account: 'liudashuai', operator: '刘大帅', action: '新增境内客户', time: '2024-02-11 14:30:10' },
+        { id: 10, account: 'wangting', operator: '王婷', action: '新增境外客户', time: '2024-02-10 13:22:45' },
+        { id: 9, account: 'xiaomi', operator: '王小米', action: '删除境内客户', time: '2024-02-09 16:40:55' },
         { id: 8, account: 'admin', operator: 'admin', action: '登录', time: '2024-02-11 12:02:10' },
         { id: 7, account: 'xiaomi', operator: '王小米', action: '新增境内订单', time: '2024-02-09 12:01:31' },
         { id: 6, account: 'xiaomi', operator: '王小米', action: '新增境外订单', time: '2024-02-08 19:25:34' },

@@ -37,7 +37,7 @@ export default {
       const first = matched[0]
 
       if (!this.isDashboard(first)) {
-        matched = [{ path: '/', meta: { title: '游艇旅游订单管理系统' }}].concat(matched)
+        matched = [{ path: '/', meta: { title: '直播大数据分析管理系统' }}].concat(matched)
       }
 
       this.levelList = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)

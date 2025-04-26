@@ -1,4 +1,4 @@
-# 🚤 游艇旅游订单管理系统
+# 🚤 直播大数据分析管理系统
 
 [![Vue.js](https://img.shields.io/badge/Vue-2.6.14-brightgreen.svg)](https://vuejs.org/)
 [![Element UI](https://img.shields.io/badge/Element--UI-2.15.6-blue.svg)](https://element.eleme.io/)

@@ -7,15 +7,11 @@
     <div class="right-menu">
       <template v-if="device!=='mobile'">
         <search id="header-search" class="right-menu-item" />
-
         <error-log class="errLog-container right-menu-item hover-effect" />
-
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
-
         <el-tooltip content="Global Size" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip>
-
       </template>
 
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
@@ -24,23 +20,52 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <!-- <router-link to="/profile/index">
-            <el-dropdown-item>Profile</el-dropdown-item>
-          </router-link> -->
           <router-link to="/">
-            <el-dropdown-item>游艇旅游订单管理系统</el-dropdown-item>
+            <el-dropdown-item>直播大数据分析管理系统</el-dropdown-item>
           </router-link>
-          <!-- <a target="_blank" href="https://github.com/PanJiaChen/vue-element-admin/">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a> -->
+          <el-dropdown-item @click.native="showChangePasswordDialog">修改密码</el-dropdown-item>
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">退出</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
+
+      <!-- 修改密码对话框 -->
+      <el-dialog
+        title="修改密码"
+        :visible.sync="dialogVisible"
+        width="500px"
+        @closed="resetForm"
+      >
+        <el-form
+          ref="passwordForm"
+          :model="form"
+          :rules="rules"
+          label-width="100px"
+          label-position="right"
+        >
+          <el-form-item label="新密码" prop="newPassword">
+            <el-input
+              v-model="form.newPassword"
+              type="password"
+              show-password
+              placeholder="请输入6位以上新密码"
+            />
+          </el-form-item>
+          <el-form-item label="确认密码" prop="confirmPassword">
+            <el-input
+              v-model="form.confirmPassword"
+              type="password"
+              show-password
+              placeholder="请再次输入新密码"
+            />
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="submitForm">确 定</el-button>
+        </span>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -55,6 +80,7 @@ import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
 
 export default {
+  name: 'Navbar',
   components: {
     Breadcrumb,
     Hamburger,
@@ -62,6 +88,45 @@ export default {
     Screenfull,
     SizeSelect,
     Search
+  },
+  data() {
+    const validatePassword = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'))
+      } else if (value.length < 6) {
+        callback(new Error('密码不能少于6位'))
+      } else {
+        if (this.form.confirmPassword !== '') {
+          this.$refs.passwordForm.validateField('confirmPassword')
+        }
+        callback()
+      }
+    }
+    const validateConfirm = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请再次输入密码'))
+      } else if (value !== this.form.newPassword) {
+        callback(new Error('两次输入密码不一致!'))
+      } else {
+        callback()
+      }
+    }
+
+    return {
+      dialogVisible: false,
+      form: {
+        newPassword: '',
+        confirmPassword: ''
+      },
+      rules: {
+        newPassword: [
+          { required: true, validator: validatePassword, trigger: 'blur' }
+        ],
+        confirmPassword: [
+          { required: true, validator: validateConfirm, trigger: 'blur' }
+        ]
+      }
+    }
   },
   computed: {
     ...mapGetters([
@@ -77,6 +142,25 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    showChangePasswordDialog() {
+      this.dialogVisible = true
+    },
+    resetForm() {
+      this.$refs.passwordForm.resetFields()
+    },
+    submitForm() {
+      this.$refs.passwordForm.validate(valid => {
+        if (valid) {
+          // 这里调用修改密码接口
+          // 示例：this.$store.dispatch('user/changePassword', this.form.newPassword)
+          this.$message.success('密码修改成功')
+          this.dialogVisible = false
+        } else {
+          this.$message.error('请检查表单填写')
+          return false
+        }
+      })
     }
   }
 }
@@ -163,5 +247,18 @@ export default {
       }
     }
   }
+}
+
+/* 对话框样式调整 */
+::v-deep .el-dialog__body {
+  padding: 20px 30px;
+}
+
+::v-deep .el-form-item__label {
+  padding-right: 20px;
+}
+
+::v-deep .el-input__inner {
+  width: 300px;
 }
 </style>

@@ -15,7 +15,13 @@
         class="nav-card"
       >
         <div class="nav-content">
-          <i :class="item.icon" />
+          <svg-icon
+            v-if="!item.icon.includes('el-icon')"
+            :icon-class="item.icon"
+            class="nav-icon"
+          />
+          <!-- Element UI 字体图标 -->
+          <i v-else :class="item.icon" class="nav-icon" />
           <h3>{{ item.title }}</h3>
         </div>
       </router-link>
@@ -32,8 +38,18 @@ export default {
       navItems: [
         {
           title: '用户管理',
-          icon: 'el-icon-user',
+          icon: 'user2',
           path: '/user-manage'
+        },
+        {
+          path: '/customer-domestic',
+          title: '境内客户管理',
+          icon: 'el-icon-user'
+        },
+        {
+          path: '/customer-international',
+          title: '境外客户管理',
+          icon: 'el-icon-user-solid'
         },
         {
           title: '境内订单管理',
@@ -118,6 +134,11 @@ export default {
     i {
       font-size: 28px;
       color: #409EFF;
+    }
+
+    .nav-icon {
+      color: #409EFF;
+      font-size: 32px;  // 新增图标尺寸设置
     }
 
     h3 {

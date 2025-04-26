@@ -1,5 +1,5 @@
 module.exports = {
-  title: '游艇旅游订单管理系统',
+  title: '直播大数据分析管理系统',
 
   /**
    * @type {boolean} true | false

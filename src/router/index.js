@@ -63,7 +63,35 @@ export const constantRoutes = [
       name: 'DomesticOrders',
       meta: {
         title: '用户管理',
+        icon: 'user3'
+      }
+    }]
+  },
+  // 境内客户管理
+  {
+    path: '/customer-domestic',
+    component: Layout,
+    children: [{
+      path: '',
+      component: () => import('@/views/customer/domestic/index.vue'),
+      name: 'CustomerDomestic',
+      meta: {
+        title: '境内客户管理',
         icon: 'el-icon-user'
+      }
+    }]
+  },
+  // 境外客户管理
+  {
+    path: '/customer-international',
+    component: Layout,
+    children: [{
+      path: '',
+      component: () => import('@/views/customer/international'),
+      name: 'CustomerInternational',
+      meta: {
+        title: '境外客户管理',
+        icon: 'el-icon-user-solid'
       }
     }]
   },
@@ -81,7 +109,6 @@ export const constantRoutes = [
       }
     }]
   },
-
   // 境外订单管理路由
   {
     path: '/international',
