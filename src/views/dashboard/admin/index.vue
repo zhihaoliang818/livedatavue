@@ -2,7 +2,7 @@
   <div class="dashboard-editor-container">
     <!-- 用户简介区块 -->
     <div class="profile-section">
-      <h1>系统管理员控制台</h1>
+      <h1>直播大数据管理系统</h1>
       <p>欢迎回来，{{ $store.getters.name }} 管理员</p>
     </div>
 
