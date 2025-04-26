@@ -334,14 +334,15 @@ export default {
       })
     },
     deleteCustomer(id) {
-      this.listLoading = true // Show loading while deleting
+      this.listLoading = true
       deleteInternationalCustomer(id).then(() => {
         this.$message.success('删除成功')
-        this.fetchCustomers() // Refresh the list after delete
+        this.fetchCustomers() // 重新加载数据
       }).catch(error => {
-        console.error('Error deleting customer:', error)
+        console.error('删除客户失败:', error)
         this.$message.error('删除失败')
-        this.listLoading = false // Hide loading on error
+      }).finally(() => {
+        this.listLoading = false // 确保无论成功失败都关闭加载状态
       })
     }
   }
