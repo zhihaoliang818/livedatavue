@@ -52,7 +52,7 @@
         <el-table-column prop="actions" label="操作" width="180" align="center">
           <template slot-scope="scope">
             <el-button size="mini" @click="editCustomer(scope.row)">编辑</el-button>
-            <el-button size="mini" type="danger" @click="deleteCustomer(scope.row.id)">删除</el-button>
+            <el-button size="mini" type="danger" @click="deleteCustomer(scope.$index)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -128,8 +128,7 @@
 import {
   getDomesticCustomers,
   addDomesticCustomer,
-  updateDomesticCustomer,
-  deleteDomesticCustomer
+  updateDomesticCustomer
 } from '@/api/customer-domestic' // Ensure this path is correct
 import { parseTime } from '@/utils' // Assuming you have this utility
 // Import province/city data - **You need to provide this data source**
@@ -326,16 +325,20 @@ export default {
       })
     },
 
-    deleteCustomer(id) {
-      this.listLoading = true
-      deleteDomesticCustomer(id).then(() => {
-        this.$message.success('删除成功')
-        this.fetchCustomers() // 重新加载数据
-      }).catch(error => {
-        console.error('删除客户失败:', error)
-        this.$message.error('删除失败')
+    deleteCustomer(index) {
+      this.$confirm('确定要删除这条客户记录吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.listLoading = true
+        this.customers.splice(index, 1)
+        this.total -= 1
+        this.$notify.success('删除成功!')
+      }).catch(() => {
+        this.$notify({ type: 'info', message: '已取消删除' })
       }).finally(() => {
-        this.listLoading = false // 确保无论成功失败都关闭加载状态
+        this.listLoading = false
       })
     }
   }
