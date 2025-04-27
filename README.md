@@ -4,7 +4,7 @@
 [![Element UI](https://img.shields.io/badge/Element--UI-2.15.6-blue.svg)](https://element.eleme.io/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-> 专为游艇旅游业务打造的高效订单管理平台。
+> 专为直播大数据分析打造的高效订单管理平台。
 
 ---
 
