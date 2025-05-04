@@ -647,7 +647,7 @@ $cursor: #fff;
   letter-spacing: 0.5px;
 }
 
-$bg:#2d3a4b;
+$bg:#003366;
 $dark_gray:#889aa4;
 $light_gray:#eee;
 

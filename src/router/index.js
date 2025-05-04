@@ -198,6 +198,7 @@ export const asyncRoutes = [
  */
 const createRouter = () => new Router({
   // 页面切换时滚动到顶部
+  mode: 'hash', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })
