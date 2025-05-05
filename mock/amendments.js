@@ -19,8 +19,10 @@ function getRandomService() {
 }
 
 for (let i = 0; i < count; i++) {
-  // 生成基础订单时间（2020-01-01至今）
-  const baseOrderTime = Mock.Random.integer(startDate, currentDate)
+  // 生成倒序时间戳（id大的时间早，id小的时间晚）
+  const timeRange = currentDate - startDate;
+  const timeOffset = Math.floor(timeRange * ((count - i - 1) / count));
+  const baseOrderTime = startDate + timeOffset;
 
   // 生成时间序列（确保时间顺序：订单时间 → 修改时间 → 审核时间）
   const modifyTime = generateFutureDate(baseOrderTime, 1, 5) // 修改时间在订单时间后1-5天

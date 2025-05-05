@@ -8,6 +8,10 @@ for (let i = 0; i < count; i++) {
   const province = Mock.Random.province()
   const city = Mock.Random.city(true) // Generate city potentially related to province
 
+  // 计算时间范围，确保时间与id正相关
+  const timeRange = Date.now() - new Date('2024-05-01').getTime()
+  const timeOffset = Math.floor(timeRange * ((count - i - 1) / count)) // 调整为倒序时间
+  
   List.push(Mock.mock({
     id: count - i, // Use descending ID for default sort
     orderNo: Mock.Random.guid().substring(0, 8).toUpperCase(), // 订单编号
@@ -18,10 +22,7 @@ for (let i = 0; i < count; i++) {
     gender: Mock.Random.pick(['男', '女']), // 性别 (Chinese)
     totalAmount: Mock.Random.float(50, 8000, 2, 2), // 下单总金额
     orderCount: Mock.Random.integer(1, 50), // 下单次数
-    // Define time range: 2024-05-01 to current
-    //Mock.Random.integer(new Date('2024-05-01').getTime(), Date.now())
-    //firstOrderTime: Mock.Random.datetime('2024-MM-dd HH:mm:ss') // 初次下单时间
-    firstOrderTime: Mock.Random.integer(new Date('2024-05-01').getTime(), Date.now()) // 初次下单时间
+    firstOrderTime: new Date('2024-05-01').getTime() + timeOffset // 确保时间与id同方向
   }))
 }
 

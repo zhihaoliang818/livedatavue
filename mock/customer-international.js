@@ -8,6 +8,11 @@ const countryCodes = ['US', 'GB', 'JP', 'KR', 'FR', 'DE', 'CA', 'AU', 'SG', 'CH'
 
 // Generate mock data list
 for (let i = 0; i < count; i++) {
+
+    // 计算时间范围，确保时间与id正相关
+    const timeRange = Date.now() - new Date('2024-05-01').getTime()
+    const timeOffset = Math.floor(timeRange * ((count - i - 1) / count)) // 调整为倒序时间
+    
   List.push(Mock.mock({
     id: count - i, // Use descending ID for default sort
     orderNo: Mock.Random.guid().substring(0, 8).toUpperCase(), // 订单编号
@@ -19,7 +24,7 @@ for (let i = 0; i < count; i++) {
     totalAmount: Mock.Random.float(50, 5000, 2, 2), // 下单总金额
     orderCount: Mock.Random.integer(1, 30), // 下单次数
     // Define time range: 2024-05-01 to current
-    firstOrderTime: Mock.Random.integer(new Date('2024-05-01').getTime(), Date.now()) // 初次下单时间
+    firstOrderTime: new Date('2024-05-01').getTime() + timeOffset // 确保时间与id同方向
   }))
 }
 

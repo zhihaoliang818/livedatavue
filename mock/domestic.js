@@ -19,12 +19,14 @@ function getRandomService() {
 }
 
 for (let i = 0; i < count; i++) {
-  // 生成 2024-05-01 到当前时间之间的随机时间戳
-  const baseOrderTime = Mock.Random.integer(startDate, currentDate)
+  // 生成倒序时间戳（id大的时间早，id小的时间晚）
+  const timeRange = currentDate - startDate;
+  const timeOffset = Math.floor(timeRange * ((count - i - 1) / count));
+  const baseOrderTime = startDate + timeOffset;
   
-  const paymentTime = generateFutureDate(baseOrderTime, 1, 5) // 支付时间至少+1天
-  const auditTime = generateFutureDate(paymentTime, 1, 5)     // 审核时间至少+1天
-  const modifyTime = generateFutureDate(auditTime, 0, 5)      // 修改时间允许当天
+  const paymentTime = generateFutureDate(baseOrderTime, 1, 5)
+  const auditTime = generateFutureDate(paymentTime, 1, 5)
+  const modifyTime = generateFutureDate(auditTime, 0, 5)  // 添加缺失的时间生成
   
   const service = getRandomService();
   List.push(Mock.mock({

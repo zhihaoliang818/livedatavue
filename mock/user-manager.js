@@ -1,5 +1,11 @@
 const Mock = require('mockjs')
 
+// 新增时间生成函数
+const generateFutureDate = (baseTime, minDays, maxDays) => {
+  const days = Mock.Random.integer(minDays, maxDays)
+  return baseTime + days * 24 * 60 * 60 * 1000
+}
+
 const List = []
 const count = 30 // Generate 30 mock users
 
@@ -8,8 +14,13 @@ const startDate = new Date('2024-05-01').getTime() // Example start date
 const currentDate = Date.now() // Current time
 
 for (let i = 0; i < count; i++) {
-  const createdAt = Mock.Random.integer(startDate, currentDate)
-  const updatedAt = Mock.Random.integer(createdAt, currentDate) // Ensure updatedAt is after or same as createdAt
+  // 生成倒序时间戳（id大的时间早，id小的时间晚）
+  const timeRange = currentDate - startDate;
+  const timeOffset = Math.floor(timeRange * ((count - i - 1) / count));
+  const createdAt = startDate + timeOffset;
+  
+  // 生成更新时间（在创建时间基础上增加随机天数）
+  const updatedAt = generateFutureDate(createdAt, 0, 5)
 
   List.push(Mock.mock({
     id: count - i,
@@ -20,8 +31,8 @@ for (let i = 0; i < count; i++) {
     name: Mock.Random.cname(),
     gender: Mock.Random.pick(['male', 'female']), // Use values consistent with form
     address: Mock.Random.county(true), // Generate a full address string
-    createdAt: createdAt, // Creation timestamp
-    updatedAt: updatedAt  // Last update timestamp
+    createdAt: createdAt, // 倒序创建时间
+    updatedAt: updatedAt  // 在创建时间基础上生成的更新时间
   }))
 }
 
