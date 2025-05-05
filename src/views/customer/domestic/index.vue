@@ -129,11 +129,54 @@ import {
   getDomesticCustomers,
   addDomesticCustomer,
   updateDomesticCustomer
+  // Assume you also have a deleteDomesticCustomer method in your API
 } from '@/api/customer-domestic' // Ensure this path is correct
-import { parseTime } from '@/utils' // Assuming you have this utility
+// Make sure your parseTime utility function is imported correctly
+// import { parseTime } from '@/utils'
+
+// If you don't have a separate utils file, include the function here:
+function parseTime(time, cFormat) {
+  if (arguments.length === 0 || !time) {
+    return null
+  }
+  const format = cFormat || '{y}-{m}-{d} {h}:{i}:{s}'
+  let date
+  if (typeof time === 'object') {
+    date = time
+  } else {
+    if ((typeof time === 'string')) {
+      if ((/^[0-9]+$/.test(time))) {
+        time = parseInt(time)
+      } else {
+        time = time.replace(new RegExp(/-/gm), '/')
+      }
+    }
+    if ((typeof time === 'number') && (time.toString().length === 10)) {
+      time = time * 1000
+    }
+    date = new Date(time)
+  }
+  const formatObj = {
+    y: date.getFullYear(),
+    m: date.getMonth() + 1,
+    d: date.getDate(),
+    h: date.getHours(),
+    i: date.getMinutes(),
+    s: date.getSeconds(),
+    a: date.getDay()
+  }
+  const time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
+    const value = formatObj[key]
+    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value] }
+    return value.toString().padStart(2, '0')
+  })
+  return time_str
+}
+
 // Import province/city data - **You need to provide this data source**
-// Example: import { regionData } from 'element-china-area-data' // If using this library
-// Or define your own structure
+// Example if using element-china-area-data library:
+// import { regionData } from 'element-china-area-data'
+// Ensure you have installed it: npm install element-china-area-data -S or yarn add element-china-area-data
 // For demonstration, using a simplified placeholder:
 const simplifiedProvinceCityData = [
   { value: '广东省', label: '广东省', children: [{ value: '广州市', label: '广州市' }, { value: '深圳市', label: '深圳市' }, { value: '珠海市', label: '珠海市' }] },
@@ -146,13 +189,13 @@ const simplifiedProvinceCityData = [
 export default {
   name: 'CustomerDomestic',
   filters: {
-    parseTime // Use the existing parseTime filter
-  }, // Changed name
+    parseTime // Use the parseTime function defined or imported
+  },
   data() {
     // Custom validator for Cascader
     const validateProvinceCity = (rule, value, callback) => {
       // `value` will be an array like ['广东省', '广州市'] from el-cascader
-      if (!value || value.length === 0) {
+      if (!value || value.length === 0 || !value[0]) { // Check if array is empty or first element is empty
         callback(new Error('请选择省/市'))
       } else {
         callback()
@@ -208,15 +251,8 @@ export default {
   methods: {
     fetchCustomers() {
       this.listLoading = true
-      // Prepare query params - extract from provinceCityFilter if used
-      // let query = {...this.listQuery};
-      // if (query.provinceCityFilter && query.provinceCityFilter.length > 0) {
-      //   query.province = query.provinceCityFilter[0];
-      //   query.city = query.provinceCityFilter[1] || undefined;
-      // }
-      // delete query.provinceCityFilter; // Remove the array from the actual API call params
-
       getDomesticCustomers(this.listQuery).then(res => {
+        // Assuming res.data is { items: [...], total: ... }
         this.customers = res.data.items || []
         this.total = res.data.total || 0
         this.listLoading = false
@@ -261,6 +297,7 @@ export default {
         orderCount: null,
         firstOrderTime: null
       }
+      // Clear validation messages if the form ref exists
       this.$nextTick(() => {
         if (this.$refs.customerForm) {
           this.$refs.customerForm.clearValidate()
@@ -272,17 +309,37 @@ export default {
       this.dialogType = 'new'
       this.dialogTitle = '新增客户'
       this.dialogVisible = true
+      // Note: For 'new', no data assignment is needed in nextTick,
+      // but keeping it here doesn't hurt and can be a pattern.
     },
     editCustomer(row) {
-      this.resetForm()
-      this.form = Object.assign({}, row)
-      // Reconstruct provinceCity array for cascader from separate province/city fields
-      this.form.provinceCity = [row.province || '', row.city || '']
-      this.form.totalAmount = Number(row.totalAmount)
-      this.form.orderCount = Number(row.orderCount)
+      this.resetForm() // Start with a clean slate
       this.dialogType = 'edit'
       this.dialogTitle = '编辑客户'
-      this.dialogVisible = true
+      this.dialogVisible = true // Open the dialog first
+
+      // Use nextTick to wait for the dialog and form to be rendered
+      // before assigning the form data, especially important for cascader and date picker.
+      this.$nextTick(() => {
+        // Copy basic row data
+        this.form = Object.assign({}, row)
+
+        // Reconstruct provinceCity array for el-cascader binding
+        // Ensure province and city are not null/undefined before pushing
+        this.form.provinceCity = []
+        if (row.province) {
+          this.form.provinceCity.push(row.province)
+          if (row.city) {
+            this.form.provinceCity.push(row.city)
+          }
+        }
+
+        // Ensure numbers are correctly typed
+        this.form.totalAmount = Number(row.totalAmount)
+        this.form.orderCount = Number(row.orderCount)
+        // The firstOrderTime should be a string like 'yyyy-MM-dd HH:mm:ss'
+        // which el-date-picker handles correctly with value-format
+      })
     },
     saveCustomer() {
       this.$refs.customerForm.validate((valid) => {
@@ -292,15 +349,16 @@ export default {
           const dataToSend = { ...this.form }
           if (dataToSend.provinceCity && dataToSend.provinceCity.length > 0) {
             dataToSend.province = dataToSend.provinceCity[0]
-            dataToSend.city = dataToSend.provinceCity[1] || ''
+            dataToSend.city = dataToSend.provinceCity[1] || '' // Handle case where only province is selected
           }
-          // delete dataToSend.provinceCity; // Remove array before sending if API expects separate fields
+          // Depending on your API, you might need to remove provinceCity array:
+          // delete dataToSend.provinceCity;
 
           const action = this.dialogType === 'new' ? addDomesticCustomer : updateDomesticCustomer
           action(dataToSend).then(() => { // Send prepared data
             this.$message.success(this.dialogType === 'new' ? '添加成功' : '更新成功')
             this.dialogVisible = false
-            this.fetchCustomers()
+            this.fetchCustomers() // Refresh the list
           }).catch(error => {
             console.error('Error saving domestic customer:', error)
             this.$message.error('操作失败，请稍后重试')
@@ -313,32 +371,50 @@ export default {
         }
       })
     },
-    confirmDeleteCustomer(id) {
-      this.$confirm('确定删除该客户吗？此操作无法撤销。', '提示', {
-        confirmButtonText: '确定删除',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.deleteCustomer(id)
-      }).catch(() => {
-        this.$message({ type: 'info', message: '已取消删除' })
-      })
-    },
-
+    // This deleteCustomer method already includes the confirm dialog.
+    // Note: This is a client-side delete simulation.
+    // In a real app, call your API here and update the list on success.
     deleteCustomer(index) {
       this.$confirm('确定要删除这条客户记录吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.listLoading = true
+        // --- IMPORTANT ---
+        // In a real application, you would call your API here:
+        // deleteDomesticCustomer(this.customers[index].id).then(() => {
+        //   this.customers.splice(index, 1); // Remove from array on success
+        //   this.total -= 1;
+        //   this.$notify.success('删除成功!');
+        //   // Handle pagination if last item on page is deleted
+        //   if (this.customers.length === 0 && this.listQuery.page > 1) {
+        //      this.listQuery.page--;
+        //      this.fetchCustomers();
+        //   }
+        // }).catch(error => {
+        //   console.error('Delete failed:', error);
+        //   this.$message.error('删除失败，请稍后重试');
+        // });
+
+        // Simulation: Remove from local array directly
         this.customers.splice(index, 1)
         this.total -= 1
         this.$notify.success('删除成功!')
+        // Handle pagination edge case for simulation
+        if (this.customers.length === 0 && this.total > 0 && this.listQuery.page > 1) {
+          this.listQuery.page--
+          this.fetchCustomers() // Fetch the previous page
+        } else if (this.customers.length === 0 && this.total === 0 && this.listQuery.page > 1) {
+          // If all items are gone, and we were on a page > 1, reset to page 1 or handle empty state
+          // This might depend on your total calculation and backend behavior
+          // For simplicity, just refetch or stay on current page if total is 0
+          this.fetchCustomers() // Could fetch page 1 if total is 0
+        }
       }).catch(() => {
         this.$notify({ type: 'info', message: '已取消删除' })
       }).finally(() => {
-        this.listLoading = false
+        // listLoading might be set to true before API call in a real scenario
+        // this.listLoading = false;
       })
     }
   }
@@ -363,10 +439,17 @@ export default {
 .dialog-footer {
   text-align: right;
 }
+/* Ensure inputs within the form take full width */
+.el-input,
+.el-select,
+.el-cascader,
+.el-date-editor.el-input,
+.el-date-editor.el-input__inner, /* Added for date picker */
 .el-input-number {
-  width: 100%; /* Ensure input number takes full width */
+  width: 100%;
 }
-.el-cascader {
-   width: 100%; /* Ensure cascader takes full width */
+/* Specific correction for el-input-number if needed */
+.el-input-number .el-input__inner {
+    text-align: left; /* Default align might be center, adjust if needed */
 }
 </style>

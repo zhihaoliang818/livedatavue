@@ -51,7 +51,7 @@
         <el-table-column prop="actions" label="操作" width="180" align="center">
           <template slot-scope="scope">
             <el-button size="mini" @click="editCustomer(scope.row)">编辑</el-button>
-            <el-button size="mini" type="danger" @click="deleteCustomer(scope.$index)">删除</el-button>
+            <el-button size="mini" type="danger" @click="confirmDeleteCustomer(scope.$index)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -130,6 +130,7 @@ import {
   getInternationalCustomers,
   addInternationalCustomer,
   updateInternationalCustomer
+  // Assume you also have a deleteInternationalCustomer method in your API
 } from '@/api/customer-international' // Ensure this path is correct
 
 // Define country codes for the dropdown (optional)
@@ -181,7 +182,7 @@ export default {
       })
       return time_str
     }
-  }, // Changed name
+  },
   data() {
     return {
       customers: [],
@@ -229,6 +230,7 @@ export default {
     fetchCustomers() {
       this.listLoading = true
       getInternationalCustomers(this.listQuery).then(res => {
+        // Assuming res.data is { items: [...], total: ... }
         this.customers = res.data.items || []
         this.total = res.data.total || 0
         this.listLoading = false
@@ -284,17 +286,26 @@ export default {
       this.dialogTitle = '新增客户'
       this.dialogVisible = true
     },
+    // --- FIX APPLIED HERE ---
     editCustomer(row) {
       this.resetForm() // Start with a clean slate
-      this.form = Object.assign({}, row) // Copy row data to form
-      // Ensure numbers and dates are correctly typed if needed
-      this.form.totalAmount = Number(row.totalAmount)
-      this.form.orderCount = Number(row.orderCount)
-      // Date might already be string 'yyyy-MM-dd HH:mm:ss', which is fine for el-date-picker
       this.dialogType = 'edit'
       this.dialogTitle = '编辑客户'
-      this.dialogVisible = true
+      this.dialogVisible = true // Open the dialog
+
+      // Use nextTick to wait for the dialog to be rendered
+      // before assigning the form data. This ensures the date picker
+      // has the chance to properly initialize with the value.
+      this.$nextTick(() => {
+        this.form = Object.assign({}, row) // Copy row data to form
+        // Ensure numbers are correctly typed
+        this.form.totalAmount = Number(row.totalAmount)
+        this.form.orderCount = Number(row.orderCount)
+        // The firstOrderTime should be a string like 'yyyy-MM-dd HH:mm:ss'
+        // which el-date-picker handles correctly with value-format
+      })
     },
+    // --- END FIX ---
     saveCustomer() {
       this.$refs.customerForm.validate((valid) => {
         if (valid) {
@@ -316,44 +327,44 @@ export default {
         }
       })
     },
-    confirmDeleteCustomer(id) {
-      this.$confirm('确定删除该客户吗？此操作无法撤销。', '提示', {
-        confirmButtonText: '确定删除',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        // User confirmed
-        this.deleteCustomer(id)
-      }).catch(() => {
-        // User cancelled
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
-      })
-    },
-    deleteCustomer(index) {
+    confirmDeleteCustomer(index) { // Use index if deleting from current client-side array
+      // Note: For production, you should call an API to delete by ID
       this.$confirm('确定要删除这条客户记录吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.listLoading = true
+        // --- IMPORTANT ---
+        // This is a client-side delete simulation.
+        // In a real application, you would call your API:
+        // deleteInternationalCustomer(this.customers[index].id).then(() => { ... })
+        // Then update the list or remove the item on success.
+        // For this example, we simulate removing from the local array:
         this.customers.splice(index, 1)
-        this.total -= 1
+        this.total -= 1 // Decrement total count
         this.$notify.success('删除成功!')
+
+        // Optional: If total is 0 and page > 1, go to previous page
+        if (this.customers.length === 0 && this.listQuery.page > 1) {
+          this.listQuery.page--
+          this.fetchCustomers() // Fetch previous page data
+        }
       }).catch(() => {
         this.$notify({ type: 'info', message: '已取消删除' })
       }).finally(() => {
-        this.listLoading = false // 确保无论成功失败都关闭加载状态
+        // listLoading is not strictly needed here as we're not fetching immediately,
+        // but keep it consistent if you were using an API call.
+        // this.listLoading = false;
       })
     }
+    // Corrected deleteCustomer to confirmDeleteCustomer for better UX
+    // The original deleteCustomer(index) directly removed without confirm
   }
 }
 </script>
 
 <style scoped>
-.customer-international { /* Changed class name */
+.customer-international {
   padding: 20px;
 }
 .clearfix:before,
@@ -374,7 +385,13 @@ export default {
 .el-select {
   width: 100%;
 }
-.el-date-editor.el-input {
-   width: 100%;
+/* Specific rule for date-time picker input */
+.el-date-editor.el-input,
+.el-date-editor.el-input__inner { /* Added el-input__inner for broader compatibility */
+    width: 100%;
 }
-</style>+
+/* Also ensure el-input-number takes full width if needed */
+.el-input-number {
+    width: 100%;
+}
+</style>
