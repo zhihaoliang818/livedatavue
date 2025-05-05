@@ -14,11 +14,11 @@ export default {
       chart: null,
       chartData: {
         // 示例数据结构
-        2022: {
+        2023: {
           domestic: [120, 132, 101, 134, 90, 230, 210, 182, 191, 234, 290, 330],
           overseas: [80, 72, 99, 66, 110, 70, 90, 118, 109, 66, 110, 70]
         },
-        2023: {
+        2024: {
           domestic: [150, 142, 121, 154, 100, 250, 230, 202, 211, 254, 300, 350],
           overseas: [90, 82, 109, 76, 120, 80, 100, 128, 119, 86, 120, 80]
         }
@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     processedData() {
-      const years = ['2022', '2023']
+      const years = ['2023', '2024']
       const months = Array.from({ length: 12 }, (_, i) => `${i + 1}月`)
 
       return {
@@ -64,21 +64,24 @@ export default {
         tooltip: {
           trigger: 'axis',
           formatter: params => {
-            const year = params[0].seriesName.split(' ')[0]
-            const month = params[0].name
-            const total = this.processedData.series
-              .find(s => s.year === year && s.type === 'domestic')
-              .total[params[0].dataIndex]
+            const month = params[0].name // Month is the same for all series at a given index
+            let tooltipContent = `${month}<br/>`
 
-            return params.map(p => {
-              const percent = ((p.value / total) * 100).toFixed(1)
-              return `${year}年${month}<br/>
-                ${p.marker} ${p.seriesName.split(' ')[1]}: ${p.value}人 (${percent}%)`
-            }).join('<br/>')
+            params.forEach(p => {
+              const year = p.seriesName.split(' ')[0]
+              const type = p.seriesName.split(' ')[1]
+              // Find the total for the correct year and index
+              const totalSeries = this.processedData.series.find(s => s.year === year && s.type === 'domestic')
+              const total = totalSeries ? totalSeries.total[p.dataIndex] : 0
+
+              const percent = total > 0 ? ((p.value / total) * 100).toFixed(1) : 0
+              tooltipContent += `${p.marker} ${year}年${type}: ${p.value}人 (${percent}%)<br/>`
+            })
+            return tooltipContent
           }
         },
         legend: {
-          data: ['2022 境内', '2022 境外', '2023 境内', '2023 境外'],
+          data: ['2023 境内', '2023 境外', '2024 境内', '2024 境外'],
           top: 'bottom'
         },
         xAxis: {
@@ -95,35 +98,35 @@ export default {
           }
         },
         series: [
-          // 2022系列
-          {
-            name: '2022 境内',
-            type: 'bar',
-            stack: '2022',
-            data: this.chartData[2022].domestic,
-            itemStyle: { color: '#5470C6' }
-          },
-          {
-            name: '2022 境外',
-            type: 'bar',
-            stack: '2022',
-            data: this.chartData[2022].overseas,
-            itemStyle: { color: '#9ac8ff' }
-          },
           // 2023系列
           {
             name: '2023 境内',
             type: 'bar',
             stack: '2023',
             data: this.chartData[2023].domestic,
-            itemStyle: { color: '#91CC75' },
-            barGap: '30%'
+            itemStyle: { color: '#5470C6' }
           },
           {
             name: '2023 境外',
             type: 'bar',
             stack: '2023',
             data: this.chartData[2023].overseas,
+            itemStyle: { color: '#9ac8ff' }
+          },
+          // 2024系列
+          {
+            name: '2024 境内',
+            type: 'bar',
+            stack: '2024',
+            data: this.chartData[2024].domestic,
+            itemStyle: { color: '#91CC75' },
+            barGap: '30%'
+          },
+          {
+            name: '2024 境外',
+            type: 'bar',
+            stack: '2024',
+            data: this.chartData[2024].overseas,
             itemStyle: { color: '#c2e3a9' }
           }
         ],

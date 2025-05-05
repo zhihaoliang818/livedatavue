@@ -71,7 +71,7 @@ export default {
           itemWidth: 14,
           itemHeight: 5,
           itemGap: 13,
-          data: ['2022年境内', '2022年境外', '2023年境内', '2023年境外'],
+          data: ['2023年境内', '2023年境外', '2024年境内', '2024年境外'],
           right: '4%',
           textStyle: {
             fontSize: 12,
@@ -119,7 +119,7 @@ export default {
           }
         }],
         series: [{
-          name: '2022年境内',
+          name: '2023年境内',
           type: 'line',
           smooth: true,
           symbol: 'circle',
@@ -154,7 +154,7 @@ export default {
           },
           data: [8, 9, 9, 8, 9, 7, 9, 9, 6, 9, 8, 9]
         }, {
-          name: '2022年境外',
+          name: '2023年境外',
           type: 'line',
           smooth: true,
           symbol: 'circle',
@@ -188,7 +188,7 @@ export default {
           },
           data: [10, 9, 8, 8, 8, 9, 8, 8, 8, 8, 8, 8]
         }, {
-          name: '2023年境内',
+          name: '2024年境内',
           type: 'line',
           smooth: true,
           symbol: 'circle',
@@ -222,7 +222,7 @@ export default {
           },
           data: [7, 8, 9, 9, 8, 10, 7, 7, 9, 9, 9, 8]
         }, {
-          name: '2023年境外',
+          name: '2024年境外',
           type: 'line',
           smooth: true,
           symbol: 'circle',
