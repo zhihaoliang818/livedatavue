@@ -3,8 +3,8 @@ const serviceData = require('./serviceData')
 const List = []
 const count = 100
 
-// 定义时间范围：2020-01-01 至当前
-const startDate = new Date('2020-01-01').getTime()  // 2020年1月1日的时间戳
+// 定义时间范围：2024-05-01 至当前
+const startDate = new Date('2024-05-01').getTime()  // 2020年1月1日的时间戳
 const currentDate = Date.now()                       // 当前时间的时间戳
 
 // 辅助函数：生成未来日期（含当前）
@@ -19,7 +19,7 @@ function getRandomService() {
 
 
 for (let i = 0; i < count; i++) {
-  // 生成 2020-01-01 到当前时间之间的随机时间戳
+  // 生成 2024-05-01 到当前时间之间的随机时间戳
   const baseOrderTime = Mock.Random.integer(startDate, currentDate)
   
   const paymentTime = generateFutureDate(baseOrderTime, 1, 5) // 支付时间至少+1天

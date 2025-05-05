@@ -4,7 +4,7 @@ const List = []
 const count = 30 // Generate 30 mock users
 
 // Define time range for creation/update timestamps
-const startDate = new Date('2023-01-01').getTime() // Example start date
+const startDate = new Date('2024-05-01').getTime() // Example start date
 const currentDate = Date.now() // Current time
 
 for (let i = 0; i < count; i++) {

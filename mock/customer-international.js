@@ -18,8 +18,8 @@ for (let i = 0; i < count; i++) {
     gender: Mock.Random.pick(['Male', 'Female']), // 性别 (Using English)
     totalAmount: Mock.Random.float(50, 5000, 2, 2), // 下单总金额
     orderCount: Mock.Random.integer(1, 30), // 下单次数
-    // Define time range: 2020-01-01 to current
-    firstOrderTime: Mock.Random.datetime('yyyy-MM-dd HH:mm:ss') // 初次下单时间
+    // Define time range: 2024-05-01 to current
+    firstOrderTime: Mock.Random.integer(new Date('2024-05-01').getTime(), Date.now()) // 初次下单时间
   }))
 }
 

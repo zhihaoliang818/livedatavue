@@ -4,10 +4,9 @@ const serviceData = require('./serviceData') // 新增serviceData依赖
 const List = []
 const count = 100
 
-// 定义时间范围：2020-01-01 至当前
-const startDate = new Date('2020-01-01').getTime()
+// 定义时间范围：2024-05-01 至当前
+const startDate = new Date('2024-05-01').getTime()
 const currentDate = Date.now()
-
 // 辅助函数：生成未来日期（含当前）
 const generateFutureDate = (baseTime, minDays, maxDays) => {
   const days = Mock.Random.integer(minDays, maxDays)
