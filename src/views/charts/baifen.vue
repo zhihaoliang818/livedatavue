@@ -39,7 +39,7 @@ export default {
           }
         },
         legend: {
-          data: ['2023年', '2022年'],
+          data: ['2024年', '2023年'],
           top: 'bottom'
         },
         xAxis: {
@@ -57,7 +57,7 @@ export default {
         },
         series: [
           {
-            name: '2023年',
+            name: '2024年',
             type: 'bar',
             data: this.chartData.currentYear,
             itemStyle: {
@@ -68,7 +68,7 @@ export default {
             }
           },
           {
-            name: '2022年',
+            name: '2023年',
             type: 'bar',
             data: this.chartData.lastYear,
             itemStyle: {

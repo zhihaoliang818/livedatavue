@@ -90,7 +90,7 @@ export default {
           textStyle: {
             color: '#90979c'
           },
-          data: ['2022年', '2023年']
+          data: ['2023年', '2024年']
         },
         calculable: true,
         xAxis: [{
@@ -163,7 +163,7 @@ export default {
           end: 35
         }],
         series: [{
-          name: '2022年',
+          name: '2023年',
           type: 'bar',
           barMaxWidth: 35,
           barGap: '30%',
@@ -199,7 +199,7 @@ export default {
         },
 
         {
-          name: '2023年',
+          name: '2024年',
           type: 'bar',
           barMaxWidth: 35,
           barGap: '30%',
